@@ -284,7 +284,7 @@
       <button class="kpiBtn" id="kpiPaybackBtn" data-panel="payback" type="button">
         <div class="label">回本年</div>
         <div class="val" id="kpiPayback">—</div>
-        <div class="hint">项目总项目总累计现金流 ≥ 0</div>
+        <div class="hint">项目总累计现金流 ≥ 0</div>
         <div class="more">点击展开明细</div>
       </button>
 
@@ -356,7 +356,7 @@
                   <th>一次性固定支出(元)</th>
                   <th>税(元)</th>
                   <th>年度现金流(元)</th>
-                  <th>项目总项目总累计现金流(元)</th>
+                  <th>项目总累计现金流(元)</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
@@ -365,7 +365,7 @@
         </div>
 
         <div class="note">
-          投资人最关心三件事：<b>峰值吃钱</b>、<b>回本速度</b>、<b>假设是否能兑现</b>。你把假设显性化，他们就更容易下判断。
+          重点 <b>峰值吃钱</b>、<b>回本速度</b>、<b>假设是否能兑现</b>。
         </div>
       </div>
     </div>
@@ -749,7 +749,7 @@
           data: {
             labels,
             datasets: [
-              { label: '项目总项目总累计现金流', data: cum, tension: .25 }
+              { label: '项目总累计现金流', data: cum, tension: .25 }
             ]
           },
           options: commonOpts
@@ -863,7 +863,7 @@
             </div>
           </div>
         `;
-        note.textContent = "峰值资金需求比“总投资”更关键：它决定你在最难熬阶段需要准备多少现金/融资额度。";
+        note.textContent = "峰值资金需求决定最难熬阶段需要准备多少现金";
         return;
       }
 
@@ -926,7 +926,7 @@
             </div>
           </div>
         `;
-        note.textContent = "内部收益率对“产量×价格×兑现”的敏感度通常远高于对少数细项成本的敏感度；你可以用滑轨把投资人最怀疑的假设拉到极端，看项目是否还能站得住。";
+        note.textContent = "内部收益率对“产量×价格×兑现”的敏感度通常远高于对少数细项成本的敏感度";
         return;
       }
     }
@@ -1002,7 +1002,7 @@
           data: {
             labels,
             datasets: [
-              { label: '项目总项目总累计现金流', data: cum, tension: .25 }
+              { label: '项目总累计现金流', data: cum, tension: .25 }
             ]
           },
           options: commonOpts
