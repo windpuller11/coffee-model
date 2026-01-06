@@ -284,7 +284,7 @@
       <button class="kpiBtn" id="kpiPaybackBtn" data-panel="payback" type="button">
         <div class="label">回本年</div>
         <div class="val" id="kpiPayback">—</div>
-        <div class="hint">项目总累计现金流 ≥ 0</div>
+        <div class="hint">项目总项目总累计现金流 ≥ 0</div>
         <div class="more">点击展开明细</div>
       </button>
 
@@ -356,7 +356,7 @@
                   <th>一次性固定支出(元)</th>
                   <th>税(元)</th>
                   <th>年度现金流(元)</th>
-                  <th>项目总累计现金流(元)</th>
+                  <th>项目总项目总累计现金流(元)</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
@@ -365,7 +365,7 @@
         </div>
 
         <div class="note">
-          重点 <b>峰值吃钱</b>、<b>回本速度</b>、<b>假设是否能兑现</b>。
+          投资人最关心三件事：<b>峰值吃钱</b>、<b>回本速度</b>、<b>假设是否能兑现</b>。你把假设显性化，他们就更容易下判断。
         </div>
       </div>
     </div>
@@ -374,8 +374,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
     const DEFAULTS = {"areaMu": 200, "freshYieldPerMu": 300, "treesPerMu": 200, "freshToGreenRatio": 6, "lossRate": 0, "price0": 150, "priceGrowth": 0, "channelFee": 0, "survivalRate": 0.95, "replantY2": 0.03, "replantY3": 0.01, "seedlingPrice": 4.8, "transplantPerMu": 600, "terracePerMu": 800, "landPrepPerMu": 600, "baseFertPrice": 1.2, "baseFertKgPerMu": 240, "weedClothPerMu": 999, "weedClothCycle": 20, "irrigationPerMu": 1600, "irrigationMaintRate": 0, "poolPerSet": 15000, "poolMuPerSet": 200, "procFacilityCapex": 0, "vehicleCapex": 0, "contingency": 0, "rentPerMu": 240, "rentGrowth": 0, "mgmtPerMu": 900, "harvestPerKgFresh": 3, "postProcPerKgGreen": 0, "logisticsPerKgGreen": 0, "packSalesPerKgGreen": 0, "qcFixed": 0, "overheadFixed": 0, "opexInflation": 0, "discountRate": 0, "taxRate": 0, "depYears": 0, "depreciableShare": 0};
-    const DEFAULT_RAMP = [0.0, 0.0, 0.05, 0.3, 0.7, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
-    const YEARS = 15;
+    const DEFAULT_RAMP = [0.0, 0.0, 0.05, 0.3, 0.7, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1, 1, 1, 1, 1];
+    const YEARS = 20;
 
     let state = JSON.parse(JSON.stringify(DEFAULTS));
     let ramp = DEFAULT_RAMP.slice();
@@ -627,23 +627,32 @@
 
           const slider = document.createElement("input");
           slider.type = "range";
-          slider.min = cfg.min;
-          slider.max = cfg.max;
-          slider.step = cfg.step;
-          slider.value = state[k];
+          // For percentage-type params, UI uses 0~100 (percent points), model uses 0~1
+          const isPct = !!cfg.pct;
+          const uiMin = isPct ? (Number(cfg.min) * 100) : Number(cfg.min);
+          const uiMax = isPct ? (Number(cfg.max) * 100) : Number(cfg.max);
+          const uiStep = isPct ? (Number(cfg.step) * 100) : Number(cfg.step);
+          const toUi = (x) => isPct ? (Number(x) * 100) : Number(x);
+          const toModel = (x) => isPct ? (Number(x) / 100) : Number(x);
+
+          slider.min = uiMin;
+          slider.max = uiMax;
+          slider.step = uiStep;
+          slider.value = toUi(state[k]);
 
           const num = document.createElement("input");
           num.type = "number";
-          num.step = cfg.step;
-          num.value = state[k];
+          num.step = uiStep;
+          num.value = toUi(state[k]);
 
           function syncFrom(v) {
-            let val = Number(v);
-            if (Number.isNaN(val)) return;
-            val = clamp(val, Number(cfg.min), Number(cfg.max));
-            state[k] = val;
-            slider.value = val;
-            num.value = val;
+            let uiVal = Number(v);
+            if (Number.isNaN(uiVal)) return;
+            uiVal = clamp(uiVal, uiMin, uiMax);
+            const modelVal = clamp(toModel(uiVal), Number(cfg.min), Number(cfg.max));
+            state[k] = modelVal;
+            slider.value = toUi(modelVal);
+            num.value = toUi(modelVal);
             updateAll();
           }
 
@@ -749,7 +758,7 @@
           data: {
             labels,
             datasets: [
-              { label: '项目总累计现金流', data: cum, tension: .25 }
+              { label: '项目总项目总累计现金流', data: cum, tension: .25 }
             ]
           },
           options: commonOpts
@@ -863,7 +872,7 @@
             </div>
           </div>
         `;
-        note.textContent = "峰值资金需求决定最难熬阶段需要准备多少现金";
+        note.textContent = "峰值资金需求比“总投资”更关键：它决定你在最难熬阶段需要准备多少现金/融资额度。";
         return;
       }
 
@@ -871,7 +880,7 @@
         title.textContent = "回本年 明细";
         const pb = model.paybackRow;
         if (!pb) {
-          body.innerHTML = `<div class="miniCard"><div class="t">未回本</div><div class="note">在当前假设下，15年内项目总累计现金流未转正。</div></div>`;
+          body.innerHTML = `<div class="miniCard"><div class="t">未回本</div><div class="note">在当前假设下，20年内项目总累计现金流未转正。</div></div>`;
           note.textContent = "";
           return;
         }
@@ -926,7 +935,7 @@
             </div>
           </div>
         `;
-        note.textContent = "内部收益率对“产量×价格×兑现”的敏感度通常远高于对少数细项成本的敏感度";
+        note.textContent = "内部收益率对“产量×价格×兑现”的敏感度通常远高于对少数细项成本的敏感度；你可以用滑轨把投资人最怀疑的假设拉到极端，看项目是否还能站得住。";
         return;
       }
     }
@@ -1002,7 +1011,7 @@
           data: {
             labels,
             datasets: [
-              { label: '项目总累计现金流', data: cum, tension: .25 }
+              { label: '项目总项目总累计现金流', data: cum, tension: .25 }
             ]
           },
           options: commonOpts
