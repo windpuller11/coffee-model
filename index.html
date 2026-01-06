@@ -226,6 +226,16 @@
       font-size: 12px;
     }
     .btn:hover { background: rgba(255,255,255,.07); }
+
+    .groupTitle {
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+      margin: 8px 0 4px;
+    }
+    .groupTitle .g { color:#cfe0ff; font-size: 12px; }
+    .groupTitle .d { color: var(--muted); font-size: 11px; }
   </style>
 </head>
 <body>
@@ -347,14 +357,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
-    const DEFAULTS = {"areaMu": 200, "freshYieldPerMu": 300, "treesPerMu": 200, "freshToGreenRatio": 6, "lossRate": 0.05, "price0": 150, "priceGrowth": 0.03, "channelFee": 0.1, "survivalRate": 0.95, "replantY2": 0.03, "replantY3": 0.01, "seedlingPrice": 4.8, "transplantPerMu": 600, "terracePerMu": 800, "landPrepPerMu": 600, "baseFertPrice": 1.2, "baseFertKgPerMu": 240, "weedClothPerMu": 1332, "weedClothCycle": 3, "irrigationPerMu": 1600, "irrigationMaintRate": 0.02, "poolPerSet": 15000, "poolMuPerSet": 200, "procFacilityCapex": 0, "vehicleCapex": 0, "contingency": 0.1, "rentPerMu": 240, "rentGrowth": 0.03, "mgmtPerMu": 900, "harvestPerKgFresh": 3, "postProcPerKgGreen": 6, "logisticsPerKgGreen": 2, "packSalesPerKgGreen": 5, "qcFixed": 30000, "overheadFixed": 50000, "opexInflation": 0.03, "discountRate": 0.12, "taxRate": 0.25, "depYears": 8, "depreciableShare": 0.85};
-    const DEFAULT_RAMP = [0, 0, 0.05, 0.3, 0.7, 0.9, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    const DEFAULTS = {"areaMu": 200, "freshYieldPerMu": 300, "treesPerMu": 200, "freshToGreenRatio": 6, "lossRate": 0.05, "price0": 150, "priceGrowth": 0.03, "channelFee": 0.1, "survivalRate": 0.95, "replantY2": 0.03, "replantY3": 0.01, "seedlingPrice": 4.8, "transplantPerMu": 600, "terracePerMu": 800, "landPrepPerMu": 600, "baseFertPrice": 1.2, "baseFertKgPerMu": 240, "weedClothPerMu": 999, "weedClothCycle": 3, "irrigationPerMu": 1600, "irrigationMaintRate": 0.03, "poolPerSet": 15000, "poolMuPerSet": 200, "procFacilityCapex": 0, "vehicleCapex": 0, "contingency": 0.1, "rentPerMu": 240, "rentGrowth": 0.03, "mgmtPerMu": 900, "harvestPerKgFresh": 3, "postProcPerKgGreen": 6, "logisticsPerKgGreen": 2, "packSalesPerKgGreen": 5, "qcFixed": 30000, "overheadFixed": 50000, "opexInflation": 0.03, "discountRate": 0.12, "taxRate": 0.25, "depYears": 8, "depreciableShare": 0.85};
+    const DEFAULT_RAMP = [0.0, 0.0, 0.05, 0.3, 0.7, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
     const YEARS = 15;
 
     let state = JSON.parse(JSON.stringify(DEFAULTS));
     let ramp = DEFAULT_RAMP.slice();
 
-    const INPUT_CONFIGS = {"areaMu": {"label": "种植面积", "unit": "亩", "min": 20, "max": 2000, "step": 10}, "freshYieldPerMu": {"label": "满产亩产鲜果", "unit": "kg/亩/年", "min": 50, "max": 1200, "step": 10}, "treesPerMu": {"label": "每亩种植株数", "unit": "株/亩", "min": 80, "max": 400, "step": 10}, "freshToGreenRatio": {"label": "鲜果/生豆比", "unit": "kg鲜果/kg生豆", "min": 4, "max": 10, "step": 0.1}, "lossRate": {"label": "次品/损耗率", "unit": "%", "min": 0, "max": 0.35, "step": 0.01, "pct": true}, "price0": {"label": "生豆基准价格", "unit": "元/kg生豆", "min": 20, "max": 500, "step": 5}, "priceGrowth": {"label": "价格年增长率", "unit": "%", "min": -0.1, "max": 0.15, "step": 0.005, "pct": true}, "channelFee": {"label": "渠道费/折扣", "unit": "%", "min": 0, "max": 0.4, "step": 0.01, "pct": true}, "seedlingPrice": {"label": "幼苗单价", "unit": "元/株", "min": 0, "max": 20, "step": 0.1}, "survivalRate": {"label": "首年成活率", "unit": "%", "min": 0.6, "max": 1.0, "step": 0.01, "pct": true}, "replantY2": {"label": "第2年补植比例", "unit": "%", "min": 0, "max": 0.2, "step": 0.01, "pct": true}, "replantY3": {"label": "第3年补植比例", "unit": "%", "min": 0, "max": 0.15, "step": 0.01, "pct": true}, "transplantPerMu": {"label": "移栽费用", "unit": "元/亩", "min": 0, "max": 5000, "step": 50}, "terracePerMu": {"label": "土地开台", "unit": "元/亩", "min": 0, "max": 12000, "step": 100}, "landPrepPerMu": {"label": "回填/整地", "unit": "元/亩", "min": 0, "max": 12000, "step": 100}, "baseFertPrice": {"label": "底肥单价", "unit": "元/kg", "min": 0, "max": 10, "step": 0.1}, "baseFertKgPerMu": {"label": "底肥用量", "unit": "kg/亩", "min": 0, "max": 1200, "step": 10}, "weedClothPerMu": {"label": "防草布", "unit": "元/亩", "min": 0, "max": 4000, "step": 20}, "weedClothCycle": {"label": "防草布更换周期", "unit": "年", "min": 1, "max": 6, "step": 1}, "irrigationPerMu": {"label": "水肥系统", "unit": "元/亩", "min": 0, "max": 8000, "step": 50}, "irrigationMaintRate": {"label": "水肥系统年维护费率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "poolPerSet": {"label": "水池/蓄水设施（每套）", "unit": "元/套", "min": 0, "max": 200000, "step": 1000}, "poolMuPerSet": {"label": "水池覆盖面积", "unit": "亩/套", "min": 20, "max": 800, "step": 10}, "procFacilityCapex": {"label": "处理厂/晒场/仓储 CAPEX", "unit": "元", "min": 0, "max": 20000000, "step": 50000}, "vehicleCapex": {"label": "车辆/设备 CAPEX", "unit": "元", "min": 0, "max": 8000000, "step": 50000}, "contingency": {"label": "预备费（Contingency）", "unit": "%", "min": 0, "max": 0.25, "step": 0.01, "pct": true}, "rentPerMu": {"label": "土地流转费", "unit": "元/亩/年", "min": 0, "max": 3000, "step": 20}, "rentGrowth": {"label": "租金递增率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "mgmtPerMu": {"label": "日常管理", "unit": "元/亩/年", "min": 0, "max": 5000, "step": 50}, "harvestPerKgFresh": {"label": "鲜果采加", "unit": "元/kg鲜果", "min": 0, "max": 10, "step": 0.1}, "postProcPerKgGreen": {"label": "后处理/分级/仓储", "unit": "元/kg生豆", "min": 0, "max": 30, "step": 0.2}, "logisticsPerKgGreen": {"label": "运输物流", "unit": "元/kg生豆", "min": 0, "max": 15, "step": 0.2}, "packSalesPerKgGreen": {"label": "包装与销售费用", "unit": "元/kg生豆", "min": 0, "max": 30, "step": 0.2}, "qcFixed": {"label": "品控/认证/检测（固定）", "unit": "元/年", "min": 0, "max": 300000, "step": 5000}, "overheadFixed": {"label": "保险/行政/财务（固定）", "unit": "元/年", "min": 0, "max": 500000, "step": 5000}, "opexInflation": {"label": "运营通胀率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "discountRate": {"label": "折现率", "unit": "%", "min": 0.05, "max": 0.25, "step": 0.005, "pct": true}, "taxRate": {"label": "所得税率", "unit": "%", "min": 0, "max": 0.35, "step": 0.01, "pct": true}, "depYears": {"label": "折旧年限（可折旧CAPEX）", "unit": "年", "min": 3, "max": 20, "step": 1}, "depreciableShare": {"label": "可折旧CAPEX占比", "unit": "%", "min": 0, "max": 1.0, "step": 0.01, "pct": true}};
+    const INPUT_CONFIGS = {"areaMu": {"label": "种植面积", "unit": "亩", "min": 20, "max": 2000, "step": 10}, "freshYieldPerMu": {"label": "满产亩产鲜果", "unit": "kg/亩/年", "min": 50, "max": 1200, "step": 10}, "freshToGreenRatio": {"label": "鲜果/生豆比", "unit": "kg鲜果/kg生豆", "min": 4, "max": 10, "step": 0.1}, "lossRate": {"label": "次品/损耗率", "unit": "%", "min": 0, "max": 0.35, "step": 0.01, "pct": true}, "price0": {"label": "生豆基准价格", "unit": "元/kg生豆", "min": 20, "max": 500, "step": 5}, "priceGrowth": {"label": "价格年增长率", "unit": "%", "min": -0.1, "max": 0.15, "step": 0.005, "pct": true}, "channelFee": {"label": "渠道费/折扣", "unit": "%", "min": 0, "max": 0.4, "step": 0.01, "pct": true}, "rentPerMu": {"label": "土地流转费", "unit": "元/亩/年", "min": 0, "max": 3000, "step": 20}, "rentGrowth": {"label": "租金递增率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "mgmtPerMu": {"label": "日常管理", "unit": "元/亩/年", "min": 0, "max": 5000, "step": 50}, "harvestPerKgFresh": {"label": "鲜果采加", "unit": "元/kg鲜果", "min": 0, "max": 10, "step": 0.1}, "postProcPerKgGreen": {"label": "后处理/分级/仓储", "unit": "元/kg生豆", "min": 0, "max": 30, "step": 0.2}, "logisticsPerKgGreen": {"label": "运输物流", "unit": "元/kg生豆", "min": 0, "max": 15, "step": 0.2}, "packSalesPerKgGreen": {"label": "包装与销售费用", "unit": "元/kg生豆", "min": 0, "max": 30, "step": 0.2}, "qcFixed": {"label": "品控/认证/检测（固定）", "unit": "元/年", "min": 0, "max": 300000, "step": 5000}, "overheadFixed": {"label": "保险/行政/财务（固定）", "unit": "元/年", "min": 0, "max": 500000, "step": 5000}, "opexInflation": {"label": "运营通胀率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "irrigationMaintRate": {"label": "水肥系统年维护费率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "discountRate": {"label": "折现率", "unit": "%", "min": 0.05, "max": 0.25, "step": 0.005, "pct": true}, "taxRate": {"label": "所得税率", "unit": "%", "min": 0, "max": 0.35, "step": 0.01, "pct": true}, "depYears": {"label": "折旧年限（可折旧CAPEX）", "unit": "年", "min": 3, "max": 20, "step": 1}, "depreciableShare": {"label": "可折旧CAPEX占比", "unit": "%", "min": 0, "max": 1.0, "step": 0.01, "pct": true}, "seedlingPrice": {"label": "幼苗单价", "unit": "元/株", "min": 0, "max": 20, "step": 0.1}, "treesPerMu": {"label": "每亩种植株数", "unit": "株/亩", "min": 80, "max": 400, "step": 10}, "survivalRate": {"label": "首年成活率", "unit": "%", "min": 0.6, "max": 1.0, "step": 0.01, "pct": true}, "replantY2": {"label": "第2年补植比例", "unit": "%", "min": 0, "max": 0.2, "step": 0.01, "pct": true}, "replantY3": {"label": "第3年补植比例", "unit": "%", "min": 0, "max": 0.15, "step": 0.01, "pct": true}, "transplantPerMu": {"label": "移栽费用", "unit": "元/亩", "min": 0, "max": 5000, "step": 50}, "terracePerMu": {"label": "土地开台", "unit": "元/亩", "min": 0, "max": 12000, "step": 100}, "landPrepPerMu": {"label": "回填/整地", "unit": "元/亩", "min": 0, "max": 12000, "step": 100}, "baseFertPrice": {"label": "底肥单价", "unit": "元/kg", "min": 0, "max": 10, "step": 0.1}, "baseFertKgPerMu": {"label": "底肥用量", "unit": "kg/亩", "min": 0, "max": 1200, "step": 10}, "weedClothPerMu": {"label": "防草布", "unit": "元/亩", "min": 0, "max": 4000, "step": 20}, "weedClothCycle": {"label": "防草布更换周期", "unit": "年", "min": 1, "max": 6, "step": 1}, "irrigationPerMu": {"label": "水肥系统", "unit": "元/亩", "min": 0, "max": 8000, "step": 50}, "poolPerSet": {"label": "水池/蓄水设施（每套）", "unit": "元/套", "min": 0, "max": 200000, "step": 1000}, "poolMuPerSet": {"label": "水池覆盖面积", "unit": "亩/套", "min": 20, "max": 800, "step": 10}, "procFacilityCapex": {"label": "处理厂/晒场/仓储 CAPEX", "unit": "元", "min": 0, "max": 20000000, "step": 50000}, "vehicleCapex": {"label": "车辆/设备 CAPEX", "unit": "元", "min": 0, "max": 8000000, "step": 50000}, "contingency": {"label": "预备费（Contingency）", "unit": "%", "min": 0, "max": 0.25, "step": 0.01, "pct": true}};
     const GROUPS = [["收入与产量", "核心收入假设（产量×价格×兑现）", ["areaMu", "freshYieldPerMu", "freshToGreenRatio", "lossRate", "price0", "priceGrowth", "channelFee"]], ["CAPEX（一次性投资）", "土地+种植+基础设施（含预备费）", ["seedlingPrice", "treesPerMu", "survivalRate", "replantY2", "replantY3", "transplantPerMu", "terracePerMu", "landPrepPerMu", "baseFertPrice", "baseFertKgPerMu", "weedClothPerMu", "weedClothCycle", "irrigationPerMu", "poolPerSet", "poolMuPerSet", "procFacilityCapex", "vehicleCapex", "contingency"]], ["OPEX（年度运营）", "租金/人工/采收/处理/渠道（含通胀）", ["rentPerMu", "rentGrowth", "mgmtPerMu", "harvestPerKgFresh", "postProcPerKgGreen", "logisticsPerKgGreen", "packSalesPerKgGreen", "qcFixed", "overheadFixed", "opexInflation", "irrigationMaintRate"]], ["财务与税", "折现、税率、折旧口径", ["discountRate", "taxRate", "depYears", "depreciableShare"]]];
 
     function fmtMoney(x) {
@@ -496,7 +506,10 @@
         rows.push({
           year, rampPct, greenKg, netPrice,
           revenue, opex, capex: capex[i], tax, fcf, cum,
-          opexBreakdown: { rent, mgmt, harvest, post, logistics, packSales, fixedQc, fixedOverhead, maint },
+          // for explain
+          opexBreakdown: {
+            rent, mgmt, harvest, post, logistics, packSales, fixedQc, fixedOverhead, maint
+          },
           capexYear: capex[i]
         });
         fcfArr.push(fcf);
@@ -534,6 +547,7 @@
         poolSets
       };
 
+      // pick a representative OPEX year (first full production year, else year10)
       let rep = rows.find(r => r.rampPct >= 0.99) || rows[Math.min(9, YEARS-1)];
       const opexBreakdown = {
         year: rep.year,
@@ -660,6 +674,75 @@
       }
     }
 
+    let chartMain = null;
+    let chartCum = null;
+
+    function updateCharts(model) {
+      const labels = model.rows.map(r => "Y" + r.year);
+      const rev = model.rows.map(r => r.revenue);
+      const opex = model.rows.map(r => r.opex);
+      const fcf = model.rows.map(r => r.fcf);
+      const cum = model.rows.map(r => r.cum);
+
+      const ctx1 = document.getElementById("chartMain");
+      const ctx2 = document.getElementById("chartCum");
+
+      const commonOpts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: "#cfe0ff" } },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${fmtMoney(ctx.raw)}`
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: "#8ea0c4" }, grid: { color: "rgba(29,42,71,.45)" } },
+          y: { ticks: { color: "#8ea0c4", callback: (v)=>fmtMoney(v) }, grid: { color: "rgba(29,42,71,.45)" } },
+        }
+      };
+
+      if (!chartMain) {
+        chartMain = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label: '收入', data: rev, tension: .25 },
+              { label: 'OPEX', data: opex, tension: .25 },
+              { label: '税后FCF', data: fcf, tension: .25 },
+            ]
+          },
+          options: commonOpts
+        });
+      } else {
+        chartMain.data.labels = labels;
+        chartMain.data.datasets[0].data = rev;
+        chartMain.data.datasets[1].data = opex;
+        chartMain.data.datasets[2].data = fcf;
+        chartMain.update();
+      }
+
+      if (!chartCum) {
+        chartCum = new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label: '累计FCF', data: cum, tension: .25 }
+            ]
+          },
+          options: commonOpts
+        });
+      } else {
+        chartCum.data.labels = labels;
+        chartCum.data.datasets[0].data = cum;
+        chartCum.update();
+      }
+    }
+
     function updateTable(rows) {
       const tb = document.getElementById("tbody");
       tb.innerHTML = rows.map(r => `
@@ -730,6 +813,7 @@
       if (panel === "peak") {
         title.textContent = "峰值资金需求 明细";
         const r = model.peakRow;
+        // show 6 years around peak
         const i = r.year - 1;
         const from = Math.max(0, i-3);
         const to = Math.min(YEARS-1, i+2);
@@ -841,12 +925,10 @@
       updateKPIs(model);
       updateTable(model.rows);
       updateCharts(model);
+      // keep current active panel
       const activeBtn = document.querySelector(".kpiBtn.active") || document.getElementById("kpiCapexBtn");
       setActivePanel(activeBtn.dataset.panel, model);
     }
-
-    let chartMain = null;
-    let chartCum = null;
 
     function updateCharts(model) {
       const labels = model.rows.map(r => "Y" + r.year);
@@ -863,7 +945,11 @@
         maintainAspectRatio: false,
         plugins: {
           legend: { labels: { color: "#cfe0ff" } },
-          tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmtMoney(ctx.raw)}` } }
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${fmtMoney(ctx.raw)}`
+            }
+          }
         },
         scales: {
           x: { ticks: { color: "#8ea0c4" }, grid: { color: "rgba(29,42,71,.45)" } },
@@ -874,11 +960,14 @@
       if (!chartMain) {
         chartMain = new Chart(ctx1, {
           type: 'line',
-          data: { labels, datasets: [
-            { label: '收入', data: rev, tension: .25 },
-            { label: 'OPEX', data: opex, tension: .25 },
-            { label: '税后FCF', data: fcf, tension: .25 },
-          ]},
+          data: {
+            labels,
+            datasets: [
+              { label: '收入', data: rev, tension: .25 },
+              { label: 'OPEX', data: opex, tension: .25 },
+              { label: '税后FCF', data: fcf, tension: .25 },
+            ]
+          },
           options: commonOpts
         });
       } else {
@@ -892,7 +981,12 @@
       if (!chartCum) {
         chartCum = new Chart(ctx2, {
           type: 'line',
-          data: { labels, datasets: [{ label: '累计FCF', data: cum, tension: .25 }] },
+          data: {
+            labels,
+            datasets: [
+              { label: '累计FCF', data: cum, tension: .25 }
+            ]
+          },
           options: commonOpts
         });
       } else {
@@ -902,6 +996,7 @@
       }
     }
 
+    // Buttons
     document.getElementById("btnReset").addEventListener("click", () => {
       state = JSON.parse(JSON.stringify(DEFAULTS));
       ramp = DEFAULT_RAMP.slice();
@@ -928,10 +1023,10 @@
       });
     });
 
+    // Init
     renderInputs();
     renderRamp();
     updateAll();
   </script>
 </body>
 </html>
-
