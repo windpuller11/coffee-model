@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>云咖庄园种植项目｜现金流测算看板</title>
+  <title>咖啡种植项目｜投资人互动测算看板</title>
   <style>
     :root {
       --bg:#0b1220;
-      --card:#101a2e;
       --muted:#8ea0c4;
       --text:#eaf0ff;
       --line:#1d2a47;
       --accent:#6ea8fe;
+      --active:#162548;
     }
     * { box-sizing:border-box; }
     body {
@@ -24,81 +24,206 @@
       color:var(--text);
     }
     .wrap { max-width: 1280px; margin: 0 auto; padding: 20px 18px 50px; }
-    header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:14px; }
+    header {
+      display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+      margin-bottom:14px;
+    }
     h1 { margin:0; font-size: 22px; letter-spacing:.2px; }
-    .sub { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .sub { color: var(--muted); font-size: 12px; line-height: 1.45; }
     .pill {
       display:inline-flex; align-items:center; gap:8px; padding:8px 10px;
       border:1px solid var(--line); border-radius:999px;
       background: rgba(255,255,255,.04); color: var(--muted);
       font-size: 12px; white-space:nowrap;
     }
-    .grid { display:grid; grid-template-columns: 420px 1fr; gap: 14px; }
+
+    .grid { display:grid; grid-template-columns: 460px 1fr; gap: 14px; }
     @media (max-width: 1050px) { .grid { grid-template-columns: 1fr; } }
+
     .card {
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border:1px solid var(--line); border-radius: 16px; padding: 14px;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-    .card h2 { margin: 0 0 10px 0; font-size: 14px; color: #cfe0ff; letter-spacing:.2px; }
-    .kpis { display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0 14px; }
+    .card h2 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #cfe0ff;
+      letter-spacing:.2px;
+    }
+
+    .kpis {
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 12px 0 10px;
+    }
     @media (max-width: 1050px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
-    .kpi { padding: 12px 12px 10px; border-radius: 14px; border:1px solid var(--line); background: rgba(255,255,255,.03); }
-    .kpi .label { color: var(--muted); font-size: 12px; }
-    .kpi .val { margin-top: 6px; font-size: 18px; font-weight: 700; letter-spacing:.2px; }
-    .kpi .hint { margin-top: 6px; color: var(--muted); font-size: 11px; }
-    .row { display:grid; grid-template-columns: 1fr 160px; gap: 10px; align-items:center; padding: 10px 0; border-top: 1px solid rgba(29,42,71,.65); }
+
+    .kpiBtn {
+      width: 100%;
+      text-align:left;
+      padding: 12px 12px 10px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .kpiBtn:hover { background: rgba(255,255,255,.06); }
+    .kpiBtn.active { background: rgba(22,37,72,.75); border-color: rgba(110,168,254,.6); }
+    .kpiBtn .label { color: var(--muted); font-size: 12px; }
+    .kpiBtn .val { margin-top: 6px; font-size: 18px; font-weight: 700; letter-spacing:.2px; }
+    .kpiBtn .hint { margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .kpiBtn .more { margin-top: 8px; color: #cfe0ff; font-size: 11px; opacity:.9; }
+
+    .detailCard { margin-bottom: 14px; }
+    .detailGrid {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 900px) { .detailGrid { grid-template-columns: 1fr; } }
+
+    .miniCard {
+      border:1px solid rgba(29,42,71,.65);
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      padding: 10px 12px;
+    }
+    .miniCard .t { color:#cfe0ff; font-size: 12px; margin-bottom: 8px; }
+    .kv { display:flex; justify-content:space-between; gap:12px; padding: 6px 0; border-top:1px solid rgba(29,42,71,.45); font-size: 12px; }
+    .kv:first-child { border-top:none; padding-top: 0; }
+    .kv .k { color: var(--muted); }
+    .kv .v { color: #dfe8ff; font-variant-numeric: tabular-nums; }
+
+    .row {
+      display:grid;
+      grid-template-columns: 1fr 170px;
+      gap: 10px;
+      align-items:center;
+      padding: 10px 0;
+      border-top: 1px solid rgba(29,42,71,.55);
+    }
     .row:first-of-type { border-top: none; padding-top: 4px; }
     .lbl { font-size: 12px; color: #cfe0ff; }
     .unit { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .ctl { display:flex; gap:8px; align-items:center; justify-content:flex-end; }
-    input[type="number"] {
-      width: 96px; padding: 8px 8px; border-radius: 10px;
-      border: 1px solid var(--line); background: rgba(0,0,0,.25);
-      color: var(--text); outline:none; font-size: 12px;
+    .ctl {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
     }
-    input[type="range"] { width: 160px; accent-color: var(--accent); }
+    input[type="number"] {
+      width: 96px;
+      padding: 8px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      outline:none;
+      font-size: 12px;
+    }
+    input[type="range"] { width: 170px; accent-color: var(--accent); }
+
     details {
-      border:1px solid rgba(29,42,71,.65); border-radius: 14px;
-      background: rgba(255,255,255,.02); padding: 10px 12px; margin-top: 10px;
+      border:1px solid rgba(29,42,71,.65);
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+      padding: 10px 12px;
+      margin-top: 10px;
     }
     details > summary {
-      cursor: pointer; color: #cfe0ff; font-size: 12px; list-style: none;
-      display:flex; align-items:center; justify-content:space-between;
+      cursor: pointer;
+      color: #cfe0ff;
+      font-size: 12px;
+      list-style: none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
     }
     details > summary::-webkit-details-marker { display:none; }
-    .rampGrid { display:grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+    .mini { color: var(--muted); font-size: 11px; }
+
+    .rampGrid {
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
     @media (max-width: 520px) { .rampGrid { grid-template-columns: repeat(3, 1fr); } }
     .rampCell {
-      border:1px solid rgba(29,42,71,.65); border-radius: 12px;
-      padding: 8px; background: rgba(0,0,0,.18);
+      border:1px solid rgba(29,42,71,.65);
+      border-radius: 12px;
+      padding: 8px;
+      background: rgba(0,0,0,.18);
     }
     .rampCell .y { color: var(--muted); font-size: 11px; }
     .rampCell input { width: 100%; margin-top: 6px; }
+
     .charts { display:grid; grid-template-columns: 1fr; gap: 12px; }
     .chartBox { height: 320px; padding: 10px 10px 4px; }
-    .tableWrap { overflow:auto; max-height: 420px; border-radius: 14px; border:1px solid rgba(29,42,71,.65); }
-    table { width: 100%; border-collapse: collapse; min-width: 820px; background: rgba(0,0,0,.18); }
+
+    .tableWrap {
+      overflow:auto;
+      max-height: 420px;
+      border-radius: 14px;
+      border:1px solid rgba(29,42,71,.65);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+      background: rgba(0,0,0,.18);
+    }
     thead th {
-      position: sticky; top: 0; background: rgba(16,26,46,.95);
-      border-bottom: 1px solid rgba(29,42,71,.85); color: #cfe0ff;
-      font-size: 12px; text-align: right; padding: 10px 10px; white-space:nowrap;
+      position: sticky;
+      top: 0;
+      background: rgba(16,26,46,.95);
+      border-bottom: 1px solid rgba(29,42,71,.85);
+      color: #cfe0ff;
+      font-size: 12px;
+      text-align: right;
+      padding: 10px 10px;
+      white-space:nowrap;
     }
     thead th:first-child, tbody td:first-child { text-align:left; }
     tbody td {
-      border-bottom: 1px solid rgba(29,42,71,.55); color: #dfe8ff;
-      font-size: 12px; padding: 9px 10px; text-align: right; white-space:nowrap;
+      border-bottom: 1px solid rgba(29,42,71,.55);
+      color: #dfe8ff;
+      font-size: 12px;
+      padding: 9px 10px;
+      text-align: right;
+      white-space:nowrap;
+      font-variant-numeric: tabular-nums;
     }
-    .note { color: var(--muted); font-size: 11px; margin-top: 10px; line-height: 1.5; }
+    .note {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 10px;
+      line-height: 1.55;
+    }
     .tag {
-      display:inline-block; padding: 2px 8px; border-radius:999px;
-      border:1px solid rgba(29,42,71,.85); background: rgba(255,255,255,.03);
-      color: var(--muted); font-size: 11px; margin-left: 6px;
+      display:inline-block;
+      padding: 2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(29,42,71,.85);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size: 11px;
+      margin-left: 6px;
     }
     .btn {
-      cursor:pointer; border-radius: 12px; border:1px solid var(--line);
-      background: rgba(255,255,255,.04); color: var(--text);
-      padding: 8px 10px; font-size: 12px;
+      cursor:pointer;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 12px;
     }
     .btn:hover { background: rgba(255,255,255,.07); }
   </style>
@@ -107,61 +232,72 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>云咖庄园种植项目｜现金流测算看板</h1>
+        <h1>咖啡种植项目｜投资人互动测算看板</h1>
         <div class="sub">
-          用滑轨调整关键变量，自动重算：现金流、回报周期、NPV/IRR、峰值资金需求。<br/>
-          <span class="tag">">根据实际情况调整参数</span>
+          滑轨调整关键变量，自动重算：现金流、回本、NPV/IRR、峰值资金需求。<span class="tag">离线可用（除图表CDN）</span>
         </div>
       </div>
-      <div class="pill">
-        <span>>🔥项目大吉🔥</span><span>｜</span><span>🛫开工起飞🛫</span>
-      </div>
+      <div class="pill"><span>面向投资人</span><span>｜</span><span>一页讲清楚假设</span></div>
     </header>
 
     <div class="kpis">
-      <div class="kpi">
+      <button class="kpiBtn active" id="kpiCapexBtn" data-panel="capex" type="button">
         <div class="label">总CAPEX（含预备费）</div>
         <div class="val" id="kpiCapex">—</div>
-        <div class="hint">Year 1 + 周期性更换/补植</div>
-      </div>
-      <div class="kpi">
+        <div class="hint">Year1 + 更换/补植</div>
+        <div class="more">点击展开明细</div>
+      </button>
+
+      <button class="kpiBtn" id="kpiPeakBtn" data-panel="peak" type="button">
         <div class="label">峰值资金需求</div>
         <div class="val" id="kpiPeak">—</div>
-        <div class="hint">累计现金流最低点（越大越“吃钱”）</div>
-      </div>
-      <div class="kpi">
+        <div class="hint">累计现金流最低点</div>
+        <div class="more">点击展开明细</div>
+      </button>
+
+      <button class="kpiBtn" id="kpiPaybackBtn" data-panel="payback" type="button">
         <div class="label">回本年</div>
         <div class="val" id="kpiPayback">—</div>
-        <div class="hint">累计现金流 ≥ 0 的首次年份</div>
-      </div>
-      <div class="kpi">
+        <div class="hint">累计FCF ≥ 0</div>
+        <div class="more">点击展开明细</div>
+      </button>
+
+      <button class="kpiBtn" id="kpiIrrBtn" data-panel="irr" type="button">
         <div class="label">IRR / NPV</div>
         <div class="val" id="kpiIrrNpv">—</div>
-        <div class="hint">税后自由现金流；未计营运资金</div>
-      </div>
+        <div class="hint">税后自由现金流</div>
+        <div class="more">点击展开明细</div>
+      </button>
+    </div>
+
+    <div class="card detailCard">
+      <h2 id="detailTitle">总CAPEX 明细</h2>
+      <div id="detailBody"></div>
+      <div class="note" id="detailNote"></div>
     </div>
 
     <div class="grid">
       <div class="card">
-        <h2>参数输入（滑轨 + 精确值）</h2>
+        <h2>参数输入（按口径归类）</h2>
+
         <div id="inputArea"></div>
 
         <details open>
           <summary>
             <span>产量爬坡（逐年满产比例）</span>
-            <span class="mini">可直接改每一年 %</span>
+            <span class="mini">改每一年 0~1</span>
           </summary>
           <div class="rampGrid" id="rampGrid"></div>
         </details>
 
-        <div class="note">
-          口径：<b>税后自由现金流 = EBITDA - 所得税 - CAPEX</b>（未计营运资金、融资结构、补贴与土地资产化等）。<br/>
-          如果你走“自建处理厂/晒场”，把 <b>处理厂/晒场/仓储 CAPEX</b> 改为非0，并适当下调 <b>后处理/分级/仓储（元/kg生豆）</b>（外包费→自有折旧+运维）。<br/>
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <button class="btn" id="btnReset" type="button">一键恢复默认值</button>
+          <button class="btn" id="btnCopyJson" type="button">复制当前参数JSON</button>
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-          <button class="btn" id="btnReset">一键恢复Excel默认值</button>
-          <button class="btn" id="btnCopyLink">复制当前参数（JSON）</button>
+        <div class="note">
+          口径：<b>税后自由现金流 FCF = 收入 - OPEX - 所得税 - CAPEX</b>（未计营运资金、融资结构、补贴与土地资产化等）。<br/>
+          如果你走“自建处理厂/晒场”，把 <b>处理厂/晒场/仓储 CAPEX</b> 设为非0，并相应下调 <b>后处理/分级/仓储（元/kg生豆）</b>。
         </div>
       </div>
 
@@ -170,17 +306,17 @@
 
         <div class="charts">
           <div class="card chartBox">
-            <h2 style="margin-bottom:6px;">收入 / 经营成本 / 税后自由现金流</h2>
+            <h2 style="margin-bottom:6px;">收入 / OPEX / 税后FCF</h2>
             <canvas id="chartMain"></canvas>
           </div>
           <div class="card chartBox">
-            <h2 style="margin-bottom:6px;">累计现金流（看回本与峰值资金需求）</h2>
+            <h2 style="margin-bottom:6px;">累计现金流</h2>
             <canvas id="chartCum"></canvas>
           </div>
         </div>
 
         <div style="margin-top:12px;">
-          <h2>年度明细表（可复制到PPT）</h2>
+          <h2>年度明细表</h2>
           <div class="tableWrap">
             <table>
               <thead>
@@ -203,107 +339,23 @@
         </div>
 
         <div class="note">
-          提醒：农业项目最大的不确定性通常不是“算术”，而是 <b>产量爬坡、极端天气/病虫害、质量分层（精品比例）与销售兑现</b>。<br/>
-          这个页面的价值是把这些关键假设“显性化”，让投资人讨论在同一张纸上发生。
+          投资人最关心三件事：<b>峰值吃钱</b>、<b>回本速度</b>、<b>假设是否能兑现</b>。你把假设显性化，他们就更容易下判断。
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Chart.js (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
-    // 默认值（来自你的Excel参数页）
-    const DEFAULTS = {
-      "areaMu": 200,
-      "freshYieldPerMu": 300,
-      "treesPerMu": 200,
-      "freshToGreenRatio": 6,
-      "lossRate": 0.05,
-      "price0": 150,
-      "priceGrowth": 0.03,
-      "channelFee": 0.1,
-      "survivalRate": 0.95,
-      "replantY2": 0.03,
-      "replantY3": 0.01,
-      "seedlingPrice": 4.8,
-      "transplantPerMu": 600,
-      "terracePerMu": 800,
-      "landPrepPerMu": 600,
-      "baseFertPrice": 1.2,
-      "baseFertKgPerMu": 240,
-      "weedClothPerMu": 1332,
-      "weedClothCycle": 3,
-      "irrigationPerMu": 1600,
-      "irrigationMaintRate": 0.02,
-      "poolPerSet": 15000,
-      "poolMuPerSet": 200,
-      "procFacilityCapex": 0,
-      "vehicleCapex": 0,
-      "contingency": 0.1,
-      "rentPerMu": 240,
-      "rentGrowth": 0.03,
-      "mgmtPerMu": 900,
-      "harvestPerKgFresh": 3,
-      "postProcPerKgGreen": 6,
-      "logisticsPerKgGreen": 2,
-      "packSalesPerKgGreen": 5,
-      "qcFixed": 30000,
-      "overheadFixed": 50000,
-      "opexInflation": 0.03,
-      "discountRate": 0.12,
-      "taxRate": 0.25,
-      "depYears": 8,
-      "depreciableShare": 0.85
-    };
-
-    const DEFAULT_RAMP = [0,0,0.05,0.3,0.7,0.9,1,1,1,1,1,1,1,1,1];
+    const DEFAULTS = {"areaMu": 200, "freshYieldPerMu": 300, "treesPerMu": 200, "freshToGreenRatio": 6, "lossRate": 0.05, "price0": 150, "priceGrowth": 0.03, "channelFee": 0.1, "survivalRate": 0.95, "replantY2": 0.03, "replantY3": 0.01, "seedlingPrice": 4.8, "transplantPerMu": 600, "terracePerMu": 800, "landPrepPerMu": 600, "baseFertPrice": 1.2, "baseFertKgPerMu": 240, "weedClothPerMu": 1332, "weedClothCycle": 3, "irrigationPerMu": 1600, "irrigationMaintRate": 0.02, "poolPerSet": 15000, "poolMuPerSet": 200, "procFacilityCapex": 0, "vehicleCapex": 0, "contingency": 0.1, "rentPerMu": 240, "rentGrowth": 0.03, "mgmtPerMu": 900, "harvestPerKgFresh": 3, "postProcPerKgGreen": 6, "logisticsPerKgGreen": 2, "packSalesPerKgGreen": 5, "qcFixed": 30000, "overheadFixed": 50000, "opexInflation": 0.03, "discountRate": 0.12, "taxRate": 0.25, "depYears": 8, "depreciableShare": 0.85};
+    const DEFAULT_RAMP = [0, 0, 0.05, 0.3, 0.7, 0.9, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     const YEARS = 15;
 
     let state = JSON.parse(JSON.stringify(DEFAULTS));
     let ramp = DEFAULT_RAMP.slice();
 
-    const INPUTS = [
-      {key:"areaMu", label:"种植面积", unit:"亩", min:20, max:2000, step:10, slider:true},
-      {key:"freshYieldPerMu", label:"满产亩产鲜果", unit:"kg/亩/年", min:50, max:1200, step:10, slider:true},
-      {key:"freshToGreenRatio", label:"鲜果/生豆比", unit:"kg鲜果/kg生豆", min:4, max:10, step:0.1, slider:true},
-      {key:"lossRate", label:"次品/损耗率", unit:"%", min:0, max:0.35, step:0.01, slider:true, pct:true},
-      {key:"price0", label:"生豆基准价格", unit:"元/kg生豆", min:20, max:500, step:5, slider:true},
-      {key:"priceGrowth", label:"价格年增长率", unit:"%", min:-0.1, max:0.15, step:0.005, slider:true, pct:true},
-      {key:"channelFee", label:"渠道费/折扣", unit:"%", min:0, max:0.4, step:0.01, slider:true, pct:true},
-      {key:"rentPerMu", label:"土地流转费", unit:"元/亩/年", min:0, max:3000, step:20, slider:true},
-      {key:"rentGrowth", label:"租金递增率", unit:"%", min:0, max:0.12, step:0.005, slider:true, pct:true},
-      {key:"mgmtPerMu", label:"日常管理", unit:"元/亩/年", min:0, max:5000, step:50, slider:true},
-      {key:"harvestPerKgFresh", label:"鲜果采加", unit:"元/kg鲜果", min:0, max:10, step:0.1, slider:true},
-      {key:"postProcPerKgGreen", label:"后处理/分级/仓储", unit:"元/kg生豆", min:0, max:30, step:0.2, slider:true},
-      {key:"logisticsPerKgGreen", label:"运输物流", unit:"元/kg生豆", min:0, max:15, step:0.2, slider:true},
-      {key:"packSalesPerKgGreen", label:"包装与销售费用", unit:"元/kg生豆", min:0, max:30, step:0.2, slider:true},
-      {key:"qcFixed", label:"品控/认证/检测（固定）", unit:"元/年", min:0, max:300000, step:5000, slider:true},
-      {key:"overheadFixed", label:"保险/行政/财务（固定）", unit:"元/年", min:0, max:500000, step:5000, slider:true},
-      {key:"opexInflation", label:"运营通胀率", unit:"%", min:0, max:0.12, step:0.005, slider:true, pct:true},
-      {key:"discountRate", label:"折现率", unit:"%", min:0.05, max:0.25, step:0.005, slider:true, pct:true},
-      {key:"taxRate", label:"所得税率", unit:"%", min:0, max:0.35, step:0.01, slider:true, pct:true},
-      {key:"depYears", label:"折旧年限（可折旧CAPEX）", unit:"年", min:3, max:20, step:1, slider:true},
-      {key:"seedlingPrice", label:"幼苗单价", unit:"元/株", min:0, max:20, step:0.1, slider:true},
-      {key:"treesPerMu", label:"每亩种植株数", unit:"株/亩", min:80, max:400, step:10, slider:true},
-      {key:"survivalRate", label:"首年成活率", unit:"%", min:0.6, max:1.0, step:0.01, slider:true, pct:true},
-      {key:"replantY2", label:"第2年补植比例", unit:"%", min:0, max:0.2, step:0.01, slider:true, pct:true},
-      {key:"replantY3", label:"第3年补植比例", unit:"%", min:0, max:0.15, step:0.01, slider:true, pct:true},
-      {key:"transplantPerMu", label:"移栽费用", unit:"元/亩", min:0, max:5000, step:50, slider:true},
-      {key:"terracePerMu", label:"土地开台", unit:"元/亩", min:0, max:12000, step:100, slider:true},
-      {key:"landPrepPerMu", label:"回填/整地", unit:"元/亩", min:0, max:12000, step:100, slider:true},
-      {key:"baseFertPrice", label:"底肥单价", unit:"元/kg", min:0, max:10, step:0.1, slider:true},
-      {key:"baseFertKgPerMu", label:"底肥用量", unit:"kg/亩", min:0, max:1200, step:10, slider:true},
-      {key:"weedClothPerMu", label:"防草布", unit:"元/亩", min:0, max:4000, step:20, slider:true},
-      {key:"weedClothCycle", label:"防草布更换周期", unit:"年", min:1, max:6, step:1, slider:true},
-      {key:"irrigationPerMu", label:"水肥系统", unit:"元/亩", min:0, max:8000, step:50, slider:true},
-      {key:"irrigationMaintRate", label:"水肥系统年维护费率", unit:"%", min:0, max:0.12, step:0.005, slider:true, pct:true},
-      {key:"poolPerSet", label:"水池/蓄水设施（每套）", unit:"元/套", min:0, max:200000, step:1000, slider:true},
-      {key:"poolMuPerSet", label:"水池覆盖面积", unit:"亩/套", min:20, max:800, step:10, slider:true},
-      {key:"procFacilityCapex", label:"处理厂/晒场/仓储 CAPEX", unit:"元", min:0, max:20000000, step:50000, slider:true},
-      {key:"vehicleCapex", label:"车辆/设备 CAPEX", unit:"元", min:0, max:8000000, step:50000, slider:true},
-      {key:"contingency", label:"预备费（Contingency）", unit:"%", min:0, max:0.25, step:0.01, slider:true, pct:true},
-    ];
+    const INPUT_CONFIGS = {"areaMu": {"label": "种植面积", "unit": "亩", "min": 20, "max": 2000, "step": 10}, "freshYieldPerMu": {"label": "满产亩产鲜果", "unit": "kg/亩/年", "min": 50, "max": 1200, "step": 10}, "treesPerMu": {"label": "每亩种植株数", "unit": "株/亩", "min": 80, "max": 400, "step": 10}, "freshToGreenRatio": {"label": "鲜果/生豆比", "unit": "kg鲜果/kg生豆", "min": 4, "max": 10, "step": 0.1}, "lossRate": {"label": "次品/损耗率", "unit": "%", "min": 0, "max": 0.35, "step": 0.01, "pct": true}, "price0": {"label": "生豆基准价格", "unit": "元/kg生豆", "min": 20, "max": 500, "step": 5}, "priceGrowth": {"label": "价格年增长率", "unit": "%", "min": -0.1, "max": 0.15, "step": 0.005, "pct": true}, "channelFee": {"label": "渠道费/折扣", "unit": "%", "min": 0, "max": 0.4, "step": 0.01, "pct": true}, "seedlingPrice": {"label": "幼苗单价", "unit": "元/株", "min": 0, "max": 20, "step": 0.1}, "survivalRate": {"label": "首年成活率", "unit": "%", "min": 0.6, "max": 1.0, "step": 0.01, "pct": true}, "replantY2": {"label": "第2年补植比例", "unit": "%", "min": 0, "max": 0.2, "step": 0.01, "pct": true}, "replantY3": {"label": "第3年补植比例", "unit": "%", "min": 0, "max": 0.15, "step": 0.01, "pct": true}, "transplantPerMu": {"label": "移栽费用", "unit": "元/亩", "min": 0, "max": 5000, "step": 50}, "terracePerMu": {"label": "土地开台", "unit": "元/亩", "min": 0, "max": 12000, "step": 100}, "landPrepPerMu": {"label": "回填/整地", "unit": "元/亩", "min": 0, "max": 12000, "step": 100}, "baseFertPrice": {"label": "底肥单价", "unit": "元/kg", "min": 0, "max": 10, "step": 0.1}, "baseFertKgPerMu": {"label": "底肥用量", "unit": "kg/亩", "min": 0, "max": 1200, "step": 10}, "weedClothPerMu": {"label": "防草布", "unit": "元/亩", "min": 0, "max": 4000, "step": 20}, "weedClothCycle": {"label": "防草布更换周期", "unit": "年", "min": 1, "max": 6, "step": 1}, "irrigationPerMu": {"label": "水肥系统", "unit": "元/亩", "min": 0, "max": 8000, "step": 50}, "irrigationMaintRate": {"label": "水肥系统年维护费率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "poolPerSet": {"label": "水池/蓄水设施（每套）", "unit": "元/套", "min": 0, "max": 200000, "step": 1000}, "poolMuPerSet": {"label": "水池覆盖面积", "unit": "亩/套", "min": 20, "max": 800, "step": 10}, "procFacilityCapex": {"label": "处理厂/晒场/仓储 CAPEX", "unit": "元", "min": 0, "max": 20000000, "step": 50000}, "vehicleCapex": {"label": "车辆/设备 CAPEX", "unit": "元", "min": 0, "max": 8000000, "step": 50000}, "contingency": {"label": "预备费（Contingency）", "unit": "%", "min": 0, "max": 0.25, "step": 0.01, "pct": true}, "rentPerMu": {"label": "土地流转费", "unit": "元/亩/年", "min": 0, "max": 3000, "step": 20}, "rentGrowth": {"label": "租金递增率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "mgmtPerMu": {"label": "日常管理", "unit": "元/亩/年", "min": 0, "max": 5000, "step": 50}, "harvestPerKgFresh": {"label": "鲜果采加", "unit": "元/kg鲜果", "min": 0, "max": 10, "step": 0.1}, "postProcPerKgGreen": {"label": "后处理/分级/仓储", "unit": "元/kg生豆", "min": 0, "max": 30, "step": 0.2}, "logisticsPerKgGreen": {"label": "运输物流", "unit": "元/kg生豆", "min": 0, "max": 15, "step": 0.2}, "packSalesPerKgGreen": {"label": "包装与销售费用", "unit": "元/kg生豆", "min": 0, "max": 30, "step": 0.2}, "qcFixed": {"label": "品控/认证/检测（固定）", "unit": "元/年", "min": 0, "max": 300000, "step": 5000}, "overheadFixed": {"label": "保险/行政/财务（固定）", "unit": "元/年", "min": 0, "max": 500000, "step": 5000}, "opexInflation": {"label": "运营通胀率", "unit": "%", "min": 0, "max": 0.12, "step": 0.005, "pct": true}, "discountRate": {"label": "折现率", "unit": "%", "min": 0.05, "max": 0.25, "step": 0.005, "pct": true}, "taxRate": {"label": "所得税率", "unit": "%", "min": 0, "max": 0.35, "step": 0.01, "pct": true}, "depYears": {"label": "折旧年限（可折旧CAPEX）", "unit": "年", "min": 3, "max": 20, "step": 1}, "depreciableShare": {"label": "可折旧CAPEX占比", "unit": "%", "min": 0, "max": 1.0, "step": 0.01, "pct": true}};
+    const GROUPS = [["收入与产量", "核心收入假设（产量×价格×兑现）", ["areaMu", "freshYieldPerMu", "freshToGreenRatio", "lossRate", "price0", "priceGrowth", "channelFee"]], ["CAPEX（一次性投资）", "土地+种植+基础设施（含预备费）", ["seedlingPrice", "treesPerMu", "survivalRate", "replantY2", "replantY3", "transplantPerMu", "terracePerMu", "landPrepPerMu", "baseFertPrice", "baseFertKgPerMu", "weedClothPerMu", "weedClothCycle", "irrigationPerMu", "poolPerSet", "poolMuPerSet", "procFacilityCapex", "vehicleCapex", "contingency"]], ["OPEX（年度运营）", "租金/人工/采收/处理/渠道（含通胀）", ["rentPerMu", "rentGrowth", "mgmtPerMu", "harvestPerKgFresh", "postProcPerKgGreen", "logisticsPerKgGreen", "packSalesPerKgGreen", "qcFixed", "overheadFixed", "opexInflation", "irrigationMaintRate"]], ["财务与税", "折现、税率、折旧口径", ["discountRate", "taxRate", "depYears", "depreciableShare"]]];
 
     function fmtMoney(x) {
       if (x === null || x === undefined || Number.isNaN(x)) return "—";
@@ -358,7 +410,7 @@
     function computeModel() {
       const s = state;
 
-      // Year-1 CAPEX
+      // --- Year1 CAPEX components ---
       const seedlingsY1 = s.areaMu * s.treesPerMu * s.seedlingPrice;
       const transplant = s.areaMu * s.transplantPerMu;
       const terrace = s.areaMu * s.terracePerMu;
@@ -371,35 +423,43 @@
       const pools = poolSets * s.poolPerSet;
 
       const capexFixed = s.procFacilityCapex + s.vehicleCapex;
-      const capexY1_raw = seedlingsY1 + transplant + terrace + landPrep + baseFert + weedClothY1 + irrigation + pools + capexFixed;
-      const capexY1 = capexY1_raw * (1 + s.contingency);
 
-      const irrigationCapexTotal = irrigation;
+      const capexY1_raw = seedlingsY1 + transplant + terrace + landPrep + baseFert + weedClothY1 + irrigation + pools + capexFixed;
+      const capexY1_cont = capexY1_raw * s.contingency;
+      const capexY1 = capexY1_raw + capexY1_cont;
+
+      const irrigationCapexTotal = irrigation; // 用于按capex比例计维护费
 
       const capex = new Array(YEARS).fill(0);
       capex[0] = capexY1;
 
-      // 补植
-      capex[1] += (s.areaMu * s.treesPerMu * s.seedlingPrice * s.replantY2) * (1 + s.contingency);
-      capex[2] += (s.areaMu * s.treesPerMu * s.seedlingPrice * s.replantY3) * (1 + s.contingency);
+      // Recurring CAPEX
+      const replantY2_raw = s.areaMu * s.treesPerMu * s.seedlingPrice * s.replantY2;
+      const replantY3_raw = s.areaMu * s.treesPerMu * s.seedlingPrice * s.replantY3;
+      capex[1] += replantY2_raw * (1 + s.contingency);
+      capex[2] += replantY3_raw * (1 + s.contingency);
 
-      // 防草布周期更换
       const cycle = Math.max(1, Math.round(s.weedClothCycle));
+      let weedClothRepl_total = 0;
       for (let y = 1 + cycle; y <= YEARS; y += cycle) {
-        capex[y-1] += (s.areaMu * s.weedClothPerMu) * (1 + s.contingency);
+        const val = (s.areaMu * s.weedClothPerMu) * (1 + s.contingency);
+        capex[y-1] += val;
+        weedClothRepl_total += val;
       }
 
-      // 折旧（直线）
+      // Depreciation (straight-line on total CAPEX * share)
       const totalCapexNominal = capex.reduce((a,b)=>a+b,0);
       const depreciable = totalCapexNominal * s.depreciableShare;
+
       const dep = new Array(YEARS).fill(0);
       const depYears = Math.max(1, Math.round(s.depYears));
       const depAnnual = depreciable / depYears;
       for (let i=0; i<Math.min(depYears, YEARS); i++) dep[i] = depAnnual;
 
+      // Annual cashflow rows (also keep breakdown for peak/payback explanation)
       const rows = [];
-      let cum = 0;
       const fcfArr = [];
+      let cum = 0;
 
       for (let i=0; i<YEARS; i++) {
         const year = i+1;
@@ -423,7 +483,6 @@
 
         const fixedQc = s.qcFixed * infl;
         const fixedOverhead = s.overheadFixed * infl;
-
         const maint = irrigationCapexTotal * s.irrigationMaintRate * infl;
 
         const opex = rent + mgmt + harvest + post + logistics + packSales + fixedQc + fixedOverhead + maint;
@@ -436,8 +495,9 @@
 
         rows.push({
           year, rampPct, greenKg, netPrice,
-          revenue, opex, capex: capex[i],
-          tax, fcf, cum
+          revenue, opex, capex: capex[i], tax, fcf, cum,
+          opexBreakdown: { rent, mgmt, harvest, post, logistics, packSales, fixedQc, fixedOverhead, maint },
+          capexYear: capex[i]
         });
         fcfArr.push(fcf);
       }
@@ -445,60 +505,126 @@
       const NPV = npv(s.discountRate, fcfArr);
       const IRR = irrBisection(fcfArr);
 
-      const minCum = Math.min(...rows.map(r=>r.cum));
-      const peakFunding = minCum < 0 ? -minCum : 0;
+      const minRow = rows.reduce((a,b)=> (b.cum < a.cum ? b : a), rows[0]);
+      const peakFunding = minRow.cum < 0 ? -minRow.cum : 0;
 
-      const payback = rows.find(r=>r.cum >= 0);
-      const paybackYear = payback ? payback.year : null;
+      const paybackRow = rows.find(r => r.cum >= 0) || null;
 
-      return { rows, capexTotal: totalCapexNominal, peakFunding, paybackYear, NPV, IRR };
+      const capexBreakdown = {
+        year1: {
+          "幼苗（Year1）": seedlingsY1,
+          "移栽": transplant,
+          "土地开台": terrace,
+          "回填/整地": landPrep,
+          "底肥": baseFert,
+          "防草布（Year1）": weedClothY1,
+          "水肥系统": irrigation,
+          "水池/蓄水设施": pools,
+          "处理厂/晒场/仓储 CAPEX": s.procFacilityCapex,
+          "车辆/设备 CAPEX": s.vehicleCapex,
+          "预备费（Year1）": capexY1_cont
+        },
+        recurring: {
+          "补植（Year2）": replantY2_raw * (1 + s.contingency),
+          "补植（Year3）": replantY3_raw * (1 + s.contingency),
+          "防草布更换（周期）": weedClothRepl_total
+        },
+        total: totalCapexNominal,
+        year1Total: capexY1,
+        poolSets
+      };
+
+      let rep = rows.find(r => r.rampPct >= 0.99) || rows[Math.min(9, YEARS-1)];
+      const opexBreakdown = {
+        year: rep.year,
+        items: {
+          "土地流转费": rep.opexBreakdown.rent,
+          "日常管理": rep.opexBreakdown.mgmt,
+          "鲜果采加": rep.opexBreakdown.harvest,
+          "后处理/分级/仓储": rep.opexBreakdown.post,
+          "运输物流": rep.opexBreakdown.logistics,
+          "包装与销售费用": rep.opexBreakdown.packSales,
+          "品控/认证/检测": rep.opexBreakdown.fixedQc,
+          "保险/行政/财务": rep.opexBreakdown.fixedOverhead,
+          "水肥系统维护": rep.opexBreakdown.maint
+        },
+        total: rep.opex
+      };
+
+      return {
+        rows, fcfArr,
+        capexTotal: totalCapexNominal,
+        capexBreakdown,
+        opexBreakdown,
+        peakFunding,
+        peakRow: minRow,
+        paybackRow,
+        NPV, IRR
+      };
     }
 
     function renderInputs() {
       const root = document.getElementById("inputArea");
       root.innerHTML = "";
 
-      INPUTS.forEach(cfg => {
-        const row = document.createElement("div");
-        row.className = "row";
+      GROUPS.forEach(([title, desc, keys], idx) => {
+        const det = document.createElement("details");
+        det.open = (idx === 0);
+        det.innerHTML = `
+          <summary>
+            <span>${title}</span>
+            <span class="mini">${desc}</span>
+          </summary>
+          <div class="sectionBody" id="group_${idx}"></div>
+        `;
+        root.appendChild(det);
 
-        const left = document.createElement("div");
-        left.innerHTML = `<div class="lbl">${cfg.label}</div><div class="unit">${cfg.unit}</div>`;
+        const body = det.querySelector(".sectionBody");
+        keys.forEach(k => {
+          const cfg = INPUT_CONFIGS[k];
+          if (!cfg) return;
 
-        const right = document.createElement("div");
-        right.className = "ctl";
+          const row = document.createElement("div");
+          row.className = "row";
 
-        const slider = document.createElement("input");
-        slider.type = "range";
-        slider.min = cfg.min;
-        slider.max = cfg.max;
-        slider.step = cfg.step;
-        slider.value = state[cfg.key];
+          const left = document.createElement("div");
+          left.innerHTML = `<div class="lbl">${cfg.label}</div><div class="unit">${cfg.unit}</div>`;
 
-        const num = document.createElement("input");
-        num.type = "number";
-        num.step = cfg.step;
-        num.value = state[cfg.key];
+          const right = document.createElement("div");
+          right.className = "ctl";
 
-        function syncFrom(v) {
-          let val = Number(v);
-          if (Number.isNaN(val)) return;
-          val = clamp(val, Number(cfg.min), Number(cfg.max));
-          state[cfg.key] = val;
-          slider.value = val;
-          num.value = val;
-          updateAll();
-        }
+          const slider = document.createElement("input");
+          slider.type = "range";
+          slider.min = cfg.min;
+          slider.max = cfg.max;
+          slider.step = cfg.step;
+          slider.value = state[k];
 
-        slider.addEventListener("input", e => syncFrom(e.target.value));
-        num.addEventListener("change", e => syncFrom(e.target.value));
+          const num = document.createElement("input");
+          num.type = "number";
+          num.step = cfg.step;
+          num.value = state[k];
 
-        right.appendChild(slider);
-        right.appendChild(num);
+          function syncFrom(v) {
+            let val = Number(v);
+            if (Number.isNaN(val)) return;
+            val = clamp(val, Number(cfg.min), Number(cfg.max));
+            state[k] = val;
+            slider.value = val;
+            num.value = val;
+            updateAll();
+          }
 
-        row.appendChild(left);
-        row.appendChild(right);
-        root.appendChild(row);
+          slider.addEventListener("input", e => syncFrom(e.target.value));
+          num.addEventListener("change", e => syncFrom(e.target.value));
+
+          right.appendChild(slider);
+          right.appendChild(num);
+
+          row.appendChild(left);
+          row.appendChild(right);
+          body.appendChild(row);
+        });
       });
     }
 
@@ -534,6 +660,191 @@
       }
     }
 
+    function updateTable(rows) {
+      const tb = document.getElementById("tbody");
+      tb.innerHTML = rows.map(r => `
+        <tr>
+          <td>Y${r.year}</td>
+          <td>${(r.rampPct*100).toFixed(0)}%</td>
+          <td>${r.greenKg.toFixed(0)}</td>
+          <td>${r.netPrice.toFixed(1)}</td>
+          <td>${fmtMoney(r.revenue)}</td>
+          <td>${fmtMoney(r.opex)}</td>
+          <td>${fmtMoney(r.capex)}</td>
+          <td>${fmtMoney(r.tax)}</td>
+          <td>${fmtMoney(r.fcf)}</td>
+          <td>${fmtMoney(r.cum)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function updateKPIs(model) {
+      document.getElementById("kpiCapex").textContent = fmtMoney(model.capexTotal);
+      document.getElementById("kpiPeak").textContent = fmtMoney(model.peakFunding);
+      document.getElementById("kpiPayback").textContent = model.paybackRow ? ("Y" + model.paybackRow.year) : "未回本";
+
+      const irrTxt = model.IRR === null ? "—" : fmtPct(model.IRR);
+      const npvTxt = fmtMoney(model.NPV);
+      document.getElementById("kpiIrrNpv").textContent = `${irrTxt} / ${npvTxt}`;
+    }
+
+    function kvList(obj) {
+      const entries = Object.entries(obj).filter(([k,v]) => (v !== null && v !== undefined && !Number.isNaN(v)));
+      return entries.map(([k,v]) => `
+        <div class="kv">
+          <div class="k">${k}</div>
+          <div class="v">${fmtMoney(v)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderDetail(panel, model) {
+      const title = document.getElementById("detailTitle");
+      const body = document.getElementById("detailBody");
+      const note = document.getElementById("detailNote");
+
+      if (panel === "capex") {
+        title.textContent = "总CAPEX 明细";
+        const y1 = model.capexBreakdown.year1;
+        const rec = model.capexBreakdown.recurring;
+
+        body.innerHTML = `
+          <div class="detailGrid">
+            <div class="miniCard">
+              <div class="t">Year 1 CAPEX（含预备费）</div>
+              ${kvList(y1)}
+              <div class="kv"><div class="k">Year 1 小计</div><div class="v">${fmtMoney(model.capexBreakdown.year1Total)}</div></div>
+            </div>
+            <div class="miniCard">
+              <div class="t">后续CAPEX（更换/补植）</div>
+              ${kvList(rec)}
+              <div class="kv"><div class="k">后续CAPEX小计</div><div class="v">${fmtMoney(Object.values(rec).reduce((a,b)=>a+(b||0),0))}</div></div>
+              <div class="kv"><div class="k">总CAPEX</div><div class="v">${fmtMoney(model.capexTotal)}</div></div>
+            </div>
+          </div>
+        `;
+        note.textContent = `水池按 ${model.capexBreakdown.poolSets} 套估算（面积/套可调）。预备费按“各项×预备费%”进入CAPEX。`;
+        return;
+      }
+
+      if (panel === "peak") {
+        title.textContent = "峰值资金需求 明细";
+        const r = model.peakRow;
+        const i = r.year - 1;
+        const from = Math.max(0, i-3);
+        const to = Math.min(YEARS-1, i+2);
+        const seg = model.rows.slice(from, to+1).map(x => ({
+          y: x.year, fcf: x.fcf, cum: x.cum, capex:x.capex, opex:x.opex, revenue:x.revenue
+        }));
+
+        body.innerHTML = `
+          <div class="detailGrid">
+            <div class="miniCard">
+              <div class="t">峰值资金需求</div>
+              <div class="kv"><div class="k">峰值资金需求（累计最低点）</div><div class="v">${fmtMoney(model.peakFunding)}</div></div>
+              <div class="kv"><div class="k">发生年份</div><div class="v">Y${r.year}</div></div>
+              <div class="kv"><div class="k">该年税后FCF</div><div class="v">${fmtMoney(r.fcf)}</div></div>
+              <div class="kv"><div class="k">该年CAPEX</div><div class="v">${fmtMoney(r.capex)}</div></div>
+              <div class="kv"><div class="k">该年OPEX</div><div class="v">${fmtMoney(r.opex)}</div></div>
+              <div class="kv"><div class="k">该年收入</div><div class="v">${fmtMoney(r.revenue)}</div></div>
+            </div>
+            <div class="miniCard">
+              <div class="t">峰值前后（节选）</div>
+              ${
+                seg.map(s=>`
+                  <div class="kv">
+                    <div class="k">Y${s.y}：FCF / 累计</div>
+                    <div class="v">${fmtMoney(s.fcf)} / ${fmtMoney(s.cum)}</div>
+                  </div>
+                `).join("")
+              }
+            </div>
+          </div>
+        `;
+        note.textContent = "峰值资金需求比“总投资”更关键：它决定你在最难熬阶段需要准备多少现金/融资额度。";
+        return;
+      }
+
+      if (panel === "payback") {
+        title.textContent = "回本年 明细";
+        const pb = model.paybackRow;
+        if (!pb) {
+          body.innerHTML = `<div class="miniCard"><div class="t">未回本</div><div class="note">在当前假设下，15年内累计现金流未转正。</div></div>`;
+          note.textContent = "";
+          return;
+        }
+        const i = pb.year - 1;
+        const from = Math.max(0, i-3);
+        const to = Math.min(YEARS-1, i+3);
+        const seg = model.rows.slice(from, to+1).map(x => ({
+          y: x.year, fcf: x.fcf, cum: x.cum
+        }));
+
+        body.innerHTML = `
+          <div class="detailGrid">
+            <div class="miniCard">
+              <div class="t">回本结论</div>
+              <div class="kv"><div class="k">回本年</div><div class="v">Y${pb.year}</div></div>
+              <div class="kv"><div class="k">回本当年累计</div><div class="v">${fmtMoney(pb.cum)}</div></div>
+              <div class="kv"><div class="k">回本当年FCF</div><div class="v">${fmtMoney(pb.fcf)}</div></div>
+            </div>
+            <div class="miniCard">
+              <div class="t">回本前后（节选）</div>
+              ${
+                seg.map(s=>`
+                  <div class="kv">
+                    <div class="k">Y${s.y}：FCF / 累计</div>
+                    <div class="v">${fmtMoney(s.fcf)} / ${fmtMoney(s.cum)}</div>
+                  </div>
+                `).join("")
+              }
+            </div>
+          </div>
+        `;
+        note.textContent = "回本年受两件事支配：①投产爬坡是否兑现；②到手单价（价格×渠道费）能否持续。";
+        return;
+      }
+
+      if (panel === "irr") {
+        title.textContent = "IRR / NPV 明细";
+        const irrTxt = model.IRR === null ? "—" : fmtPct(model.IRR);
+        body.innerHTML = `
+          <div class="detailGrid">
+            <div class="miniCard">
+              <div class="t">指标口径</div>
+              <div class="kv"><div class="k">折现率（用于NPV）</div><div class="v">${fmtPct(state.discountRate)}</div></div>
+              <div class="kv"><div class="k">所得税率</div><div class="v">${fmtPct(state.taxRate)}</div></div>
+              <div class="kv"><div class="k">IRR</div><div class="v">${irrTxt}</div></div>
+              <div class="kv"><div class="k">NPV</div><div class="v">${fmtMoney(model.NPV)}</div></div>
+            </div>
+            <div class="miniCard">
+              <div class="t">代表性年度OPEX拆解（Y${model.opexBreakdown.year}）</div>
+              ${kvList(model.opexBreakdown.items)}
+              <div class="kv"><div class="k">OPEX小计</div><div class="v">${fmtMoney(model.opexBreakdown.total)}</div></div>
+            </div>
+          </div>
+        `;
+        note.textContent = "IRR对“产量×价格×兑现”的敏感度通常远高于对少数细项成本的敏感度；你可以用滑轨把投资人最怀疑的假设拉到极端，看项目是否还能站得住。";
+        return;
+      }
+    }
+
+    function setActivePanel(panel, model) {
+      document.querySelectorAll(".kpiBtn").forEach(b => {
+        b.classList.toggle("active", b.dataset.panel === panel);
+      });
+      renderDetail(panel, model);
+    }
+
+    function updateAll() {
+      const model = computeModel();
+      updateKPIs(model);
+      updateTable(model.rows);
+      updateCharts(model);
+      const activeBtn = document.querySelector(".kpiBtn.active") || document.getElementById("kpiCapexBtn");
+      setActivePanel(activeBtn.dataset.panel, model);
+    }
+
     let chartMain = null;
     let chartCum = null;
 
@@ -552,9 +863,7 @@
         maintainAspectRatio: false,
         plugins: {
           legend: { labels: { color: "#cfe0ff" } },
-          tooltip: {
-            callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmtMoney(ctx.raw)}` }
-          }
+          tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmtMoney(ctx.raw)}` } }
         },
         scales: {
           x: { ticks: { color: "#8ea0c4" }, grid: { color: "rgba(29,42,71,.45)" } },
@@ -593,40 +902,6 @@
       }
     }
 
-    function updateTable(rows) {
-      const tb = document.getElementById("tbody");
-      tb.innerHTML = rows.map(r => `
-        <tr>
-          <td>Y${r.year}</td>
-          <td>${(r.rampPct*100).toFixed(0)}%</td>
-          <td>${r.greenKg.toFixed(0)}</td>
-          <td>${r.netPrice.toFixed(1)}</td>
-          <td>${fmtMoney(r.revenue)}</td>
-          <td>${fmtMoney(r.opex)}</td>
-          <td>${fmtMoney(r.capex)}</td>
-          <td>${fmtMoney(r.tax)}</td>
-          <td>${fmtMoney(r.fcf)}</td>
-          <td>${fmtMoney(r.cum)}</td>
-        </tr>
-      `).join("");
-    }
-
-    function updateKPIs(model) {
-      document.getElementById("kpiCapex").textContent = fmtMoney(model.capexTotal);
-      document.getElementById("kpiPeak").textContent = fmtMoney(model.peakFunding);
-      document.getElementById("kpiPayback").textContent = model.paybackYear ? ("Y" + model.paybackYear) : "未回本";
-      const irrTxt = model.IRR === null ? "—" : fmtPct(model.IRR);
-      const npvTxt = fmtMoney(model.NPV);
-      document.getElementById("kpiIrrNpv").textContent = `${irrTxt} / ${npvTxt}`;
-    }
-
-    function updateAll() {
-      const model = computeModel();
-      updateKPIs(model);
-      updateTable(model.rows);
-      updateCharts(model);
-    }
-
     document.getElementById("btnReset").addEventListener("click", () => {
       state = JSON.parse(JSON.stringify(DEFAULTS));
       ramp = DEFAULT_RAMP.slice();
@@ -635,15 +910,22 @@
       updateAll();
     });
 
-    document.getElementById("btnCopyLink").addEventListener("click", async () => {
+    document.getElementById("btnCopyJson").addEventListener("click", async () => {
       const payload = { params: state, ramp };
       const txt = JSON.stringify(payload, null, 2);
       try {
         await navigator.clipboard.writeText(txt);
-        alert("已复制当前参数JSON（可发给我做版本对比/审计）");
+        alert("已复制当前参数JSON");
       } catch (e) {
         prompt("复制失败，请手动复制：", txt);
       }
+    });
+
+    document.querySelectorAll(".kpiBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const model = computeModel();
+        setActivePanel(btn.dataset.panel, model);
+      });
     });
 
     renderInputs();
@@ -652,3 +934,4 @@
   </script>
 </body>
 </html>
+
